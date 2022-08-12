@@ -1,6 +1,7 @@
 package com.adobe.phonegap.push
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -436,12 +437,15 @@ class FCMService : FirebaseMessagingService() {
   private fun createNotification(extras: Bundle?) {
     val mNotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     val appName = getAppName(this)
-    val notId = parseNotificationIdToInt(extras)
-    val notificationIntent = Intent(this, PushHandlerActivity::class.java).apply {
-      addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-      putExtra(PushConstants.PUSH_BUNDLE, extras)
-      putExtra(PushConstants.NOT_ID, notId)
-    }
+    val fullScreenIntent: Boolean = extras.getString(FULL_SCREEN_NOTIFICATION, "").equals("1")
+    Log.d(LOG_TAG, "fullScreenIntent = $fullScreenIntent")
+    val notId = parseInt(NOT_ID, extras)
+    val activityClass: Class<out Activity?> =
+      if (fullScreenIntent) FullScreenActivity::class.java else PushHandlerActivity::class.java
+    val notificationIntent = Intent(this, activityClass)
+    notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    notificationIntent.putExtra(PUSH_BUNDLE, extras)
+    notificationIntent.putExtra(NOT_ID, notId)
     val random = SecureRandom()
     var requestCode = random.nextInt()
     val contentIntent = PendingIntent.getActivity(
@@ -479,7 +483,17 @@ class FCMService : FirebaseMessagingService() {
       .setContentIntent(contentIntent)
       .setDeleteIntent(deleteIntent)
       .setAutoCancel(true)
-
+    if (fullScreenIntent) {
+      mBuilder
+        .setFullScreenIntent(contentIntent, true)
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+    } else {
+      mBuilder.setContentIntent(contentIntent)
+    }
+    val prefs: SharedPreferences = context.getSharedPreferences(
+      PushPlugin.COM_ADOBE_PHONEGAP_PUSH,
+      Context.MODE_PRIVATE
+    )
     val localIcon = pushSharedPref.getString(PushConstants.ICON, null)
     val localIconColor = pushSharedPref.getString(PushConstants.ICON_COLOR, null)
     val soundOption = pushSharedPref.getBoolean(PushConstants.SOUND, true)
