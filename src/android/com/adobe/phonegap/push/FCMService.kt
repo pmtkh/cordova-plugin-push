@@ -437,7 +437,7 @@ class FCMService : FirebaseMessagingService() {
   private fun createNotification(extras: Bundle?) {
     val mNotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     val appName = getAppName(this)
-    val fullScreenIntent: Boolean = extras.getString(FULL_SCREEN_NOTIFICATION, "").equals("1")
+    val fullScreenIntent: Boolean = extras?.getString(PushConstants.FULL_SCREEN_NOTIFICATION, "").equals("1")
     Log.d(LOG_TAG, "fullScreenIntent = $fullScreenIntent")
     val notId = parseInt(NOT_ID, extras)
     val activityClass: Class<out Activity?> =
