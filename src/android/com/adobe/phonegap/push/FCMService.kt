@@ -439,7 +439,7 @@ class FCMService : FirebaseMessagingService() {
     val appName = getAppName(this)
     val fullScreenIntent: Boolean = extras?.getString(PushConstants.FULL_SCREEN_NOTIFICATION, "").equals("1")
     Log.d(TAG, "fullScreenIntent = $fullScreenIntent")
-    val notId = Integer.parseInt(PushConstants.NOT_ID, extras)
+    val notId = parseNotificationIdToInt(extras)
     val activityClass: Class<out Activity?> =
       if (fullScreenIntent) FullScreenActivity::class.java else PushHandlerActivity::class.java
     val notificationIntent = Intent(this, activityClass)
@@ -450,7 +450,7 @@ class FCMService : FirebaseMessagingService() {
     var requestCode = random.nextInt()
     val contentIntent = PendingIntent.getActivity(
       this,
-      requestCode,
+      requestCode,FCMService
       notificationIntent,
       PendingIntent.FLAG_UPDATE_CURRENT
     )
