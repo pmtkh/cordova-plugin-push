@@ -23,8 +23,8 @@ class FullScreenActivity : Activity() {
         val pm: PackageManager = getPackageManager()
         val launchIntent: Intent? =
             pm.getLaunchIntentForPackage(getApplicationContext().getPackageName())
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        launchIntent.addFlags(Intent.FLAG_FROM_BACKGROUND)
+        launchIntent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        launchIntent?.addFlags(Intent.FLAG_FROM_BACKGROUND)
         startActivity(launchIntent)
     }
 
@@ -45,10 +45,9 @@ class FullScreenActivity : Activity() {
                         or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
             )
         }
-        val candidate: Any! = getSystemService(Context.KEYGUARD_SERVICE)
+        val candidate: KeyguardManager? = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && candidate != null) {
-            val keyguardManager: KeyguardManager? = candidate as KeyguardManager
-            keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
+            keyguardManager?.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
                 override fun onDismissCancelled() {
                     super.onDismissCancelled()
                     Log.d("keygurd", "canceled")
