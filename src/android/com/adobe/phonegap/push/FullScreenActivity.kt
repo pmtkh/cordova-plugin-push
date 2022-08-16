@@ -45,8 +45,8 @@ class FullScreenActivity : Activity() {
                         or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
             )
         }
-        val candidate: KeyguardManager? = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && candidate != null) {
+        val keyguardManager: KeyguardManager? = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && keyguardManager != null) {
             keyguardManager?.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
                 override fun onDismissCancelled() {
                     super.onDismissCancelled()
