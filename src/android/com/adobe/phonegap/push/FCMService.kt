@@ -690,7 +690,7 @@ class FCMService : FirebaseMessagingService() {
                   this,
                   uniquePendingIntentRequestCode,
                   intent,
-                  oneShotActivityFlagPendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_MUTABLE
+                  PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_MUTABLE
                 )
               } else {
                 Log.d(TAG, "push receiver for notId $notId")
