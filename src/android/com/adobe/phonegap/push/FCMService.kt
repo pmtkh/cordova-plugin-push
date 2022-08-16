@@ -471,7 +471,7 @@ class FCMService : FirebaseMessagingService() {
       this,
       requestCode,
       dismissedNotificationIntent,
-      PendingIntent.FLAG_CANCEL_CURRENT
+      PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
     )
 
     val mBuilder: NotificationCompat.Builder =
@@ -699,7 +699,7 @@ class FCMService : FirebaseMessagingService() {
                   this,
                   uniquePendingIntentRequestCode,
                   intent,
-                  PendingIntent.FLAG_ONE_SHOT
+                  PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_ONE_SHOT
                 )
               }
             }
@@ -720,7 +720,7 @@ class FCMService : FirebaseMessagingService() {
               pIntent = PendingIntent.getBroadcast(
                 this, uniquePendingIntentRequestCode,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
               )
             }
           }
