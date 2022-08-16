@@ -51,7 +51,7 @@ class FullScreenActivity : Activity() {
             keyguardManager?.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
                 override fun onDismissCancelled() {
                     super.onDismissCancelled()
-                    Log.d("keygurd", "canceled")
+                    Log.d(LOG_TAG, "canceled")
                 }
 
                 override fun onDismissError() {
