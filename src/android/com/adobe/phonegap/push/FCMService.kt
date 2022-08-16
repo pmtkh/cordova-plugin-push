@@ -448,11 +448,16 @@ class FCMService : FirebaseMessagingService() {
     notificationIntent.putExtra(PushConstants.NOT_ID, notId)
     val random = SecureRandom()
     var requestCode = random.nextInt()
+    val updateActivityFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+    } else {
+        PendingIntent.FLAG_UPDATE_CURRENT
+    }
     val contentIntent = PendingIntent.getActivity(
       this,
       requestCode,
       notificationIntent,
-      PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+      updateActivityFlag
     )
     val dismissedNotificationIntent = Intent(
       this,
@@ -467,11 +472,16 @@ class FCMService : FirebaseMessagingService() {
 
     requestCode = random.nextInt()
 
+    val deleteActivityFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
+    } else {
+      PendingIntent.FLAG_CANCEL_CURRENT
+    }
     val deleteIntent = PendingIntent.getBroadcast(
       this,
       requestCode,
       dismissedNotificationIntent,
-      PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+      deleteActivityFlag
     )
 
     val mBuilder: NotificationCompat.Builder =
@@ -668,7 +678,11 @@ class FCMService : FirebaseMessagingService() {
           var intent: Intent?
           var pIntent: PendingIntent?
           val callback = action.getString(PushConstants.CALLBACK)
-
+          val updateActivityFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+          } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+          }
           when {
             inline -> {
               Log.d(TAG, "Version: ${Build.VERSION.SDK_INT} = ${Build.VERSION_CODES.M}")
@@ -683,14 +697,21 @@ class FCMService : FirebaseMessagingService() {
 
               updateIntent(intent, callback, extras, foreground, notId)
 
+              val oneShotActivityFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_MUTABLE
+              } else {
+                PendingIntent.FLAG_ONE_SHOT
+              }
+
               pIntent = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
                 Log.d(TAG, "push activity for notId $notId")
+
 
                 PendingIntent.getActivity(
                   this,
                   uniquePendingIntentRequestCode,
                   intent,
-                  PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_ONE_SHOT
+                  oneShotActivityFlag
                 )
               } else {
                 Log.d(TAG, "push receiver for notId $notId")
@@ -699,7 +720,7 @@ class FCMService : FirebaseMessagingService() {
                   this,
                   uniquePendingIntentRequestCode,
                   intent,
-                  PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_ONE_SHOT
+                  oneShotActivityFlag
                 )
               }
             }
@@ -710,7 +731,7 @@ class FCMService : FirebaseMessagingService() {
               pIntent = PendingIntent.getActivity(
                 this, uniquePendingIntentRequestCode,
                 intent,
-                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                updateActivityFlag
               )
             }
 
@@ -720,7 +741,7 @@ class FCMService : FirebaseMessagingService() {
               pIntent = PendingIntent.getBroadcast(
                 this, uniquePendingIntentRequestCode,
                 intent,
-                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                updateActivityFlag
               )
             }
           }
@@ -764,8 +785,10 @@ class FCMService : FirebaseMessagingService() {
         mBuilder.extend(NotificationCompat.WearableExtender().addActions(wActions))
         wActions.clear()
       } catch (e: JSONException) {
-        // nope
+          Log.d(TAG, "Create actions error: ${e.message}")
       }
+    } else {
+        Log.d(TAG, "No action to perform")
     }
   }
 

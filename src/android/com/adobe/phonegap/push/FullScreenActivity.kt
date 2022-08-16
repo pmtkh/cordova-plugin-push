@@ -30,6 +30,7 @@ class FullScreenActivity : Activity() {
 
     protected override fun onDestroy() {
         super.onDestroy()
+        Log.d(LOG_TAG, "onDestroy")
         turnScreenOffAndKeyguardOn()
     }
 
