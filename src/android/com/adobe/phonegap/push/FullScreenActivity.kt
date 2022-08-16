@@ -10,9 +10,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 
-class FullScreenActivity : Activity(), PushConstants {
-    @Override
-    fun onCreate(@Nullable savedInstanceState: Bundle?) {
+class FullScreenActivity : Activity() {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(LOG_TAG, "onCreate")
         super.onCreate(savedInstanceState)
         turnScreenOnAndKeyguardOff()
@@ -22,15 +21,14 @@ class FullScreenActivity : Activity(), PushConstants {
 
     private fun forceMainActivityReload() {
         val pm: PackageManager = getPackageManager()
-        val launchIntent: Intent =
+        val launchIntent: Intent? =
             pm.getLaunchIntentForPackage(getApplicationContext().getPackageName())
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         launchIntent.addFlags(Intent.FLAG_FROM_BACKGROUND)
         startActivity(launchIntent)
     }
 
-    @Override
-    protected fun onDestroy() {
+    protected override fun onDestroy() {
         super.onDestroy()
         turnScreenOffAndKeyguardOn()
     }
@@ -47,18 +45,21 @@ class FullScreenActivity : Activity(), PushConstants {
                         or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
             )
         }
-        val candidate: Object = getSystemService(Context.KEYGUARD_SERVICE)
+        val candidate: Any! = getSystemService(Context.KEYGUARD_SERVICE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && candidate != null) {
-            val keyguardManager: KeyguardManager = candidate as KeyguardManager
-            keyguardManager.requestDismissKeyguard(this, object : KeyguardDismissCallback() {
-                @Override
-                fun onDismissError() {
+            val keyguardManager: KeyguardManager? = candidate as KeyguardManager
+            keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
+                override fun onDismissCancelled() {
+                    super.onDismissCancelled()
+                    Log.d("keygurd", "canceled")
+                }
+
+                override fun onDismissError() {
                     super.onDismissError()
                     Log.d(LOG_TAG, "onDismissError")
                 }
 
-                @Override
-                fun onDismissSucceeded() {
+                override fun onDismissSucceeded() {
                     super.onDismissSucceeded()
                     Log.d(LOG_TAG, "onDismissSucceeded")
                 }

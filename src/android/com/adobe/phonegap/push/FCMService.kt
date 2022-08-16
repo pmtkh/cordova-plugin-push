@@ -450,7 +450,7 @@ class FCMService : FirebaseMessagingService() {
     var requestCode = random.nextInt()
     val contentIntent = PendingIntent.getActivity(
       this,
-      requestCode,FCMService
+      requestCode,
       notificationIntent,
       PendingIntent.FLAG_UPDATE_CURRENT
     )
@@ -491,7 +491,7 @@ class FCMService : FirebaseMessagingService() {
       mBuilder.setContentIntent(contentIntent)
     }
     val prefs: SharedPreferences = context.getSharedPreferences(
-      PushPlugin.COM_ADOBE_PHONEGAP_PUSH,
+      PushConstants.COM_ADOBE_PHONEGAP_PUSH,
       Context.MODE_PRIVATE
     )
     val localIcon = pushSharedPref.getString(PushConstants.ICON, null)
