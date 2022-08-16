@@ -668,11 +668,6 @@ class FCMService : FirebaseMessagingService() {
           var intent: Intent?
           var pIntent: PendingIntent?
           val callback = action.getString(PushConstants.CALLBACK)
-          val updateActivityFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-          } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-          }
           when {
             inline -> {
               Log.d(TAG, "Version: ${Build.VERSION.SDK_INT} = ${Build.VERSION_CODES.M}")
@@ -769,10 +764,8 @@ class FCMService : FirebaseMessagingService() {
         mBuilder.extend(NotificationCompat.WearableExtender().addActions(wActions))
         wActions.clear()
       } catch (e: JSONException) {
-          Log.d(TAG, "Create actions error: ${e.message}")
+        // nope
       }
-    } else {
-        Log.d(TAG, "No action to perform")
     }
   }
 
